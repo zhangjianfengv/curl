@@ -51,14 +51,11 @@ final class ReadArguments {
                                                 final Map<String, List<String>> argMatches) {
         final String requestCommandInput = requestCommandWithoutBasename.replaceAll ("\\s+-([a-zA-Z0-9])\\s+", " -$1 ");
         final List<String> matches;
-        if (argMatches.containsKey (requestCommandInput)) {
-            matches = argMatches.get (requestCommandInput);
-        }else{
-            matches = asMatches (Arguments.ARGS_SPLIT_REGEX, requestCommandInput);
-            argMatches.put (requestCommandInput, matches);
-        }
 
-        return ofNullable (matches).map (List :: stream).orElse (Stream.empty ()).map (match -> {
+            matches = asMatches (Arguments.ARGS_SPLIT_REGEX, requestCommandInput);
+
+
+        return of(matches).stream().flatMap(Collection::stream).map (match -> {
             String argument = ReadArguments.removeSlashes (match.trim ());
             if (PLACEHOLDER_REGEX.matcher (argument).matches ())
                 return placeholderValues.get (parseInt (argument.substring ("$curl_placeholder_".length ())));
